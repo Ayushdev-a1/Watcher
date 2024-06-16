@@ -61,8 +61,8 @@ watcher/
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/your-username/zoom-clone.git
-   cd zoom-clone
+   git clone https://github.com/your-username/watcher.git
+   cd watcher
    ```
 
 2. Install server dependencies
@@ -81,7 +81,7 @@ watcher/
 
 1. Create a `.env` file in the `server` directory and add your MongoDB connection string and JWT secret:
    ```
-   MONGO_URI=mongodb://localhost:27017/zoom-clone
+   MONGO_URI=mongodb://localhost:27017/watcher
    JWT_SECRET=your_jwt_secret
    ```
 
