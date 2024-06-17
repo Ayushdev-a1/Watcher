@@ -3,7 +3,7 @@ const Meeting = require('../modals/meeting');
 const fetchuser = require('../middleware/fetchuser');
 const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
-
+const PORT = process.env.PORT || 5000;
 //create meeting
 
 router.post('/create', fetchuser, async (req, res) => {
@@ -19,7 +19,7 @@ router.post('/create', fetchuser, async (req, res) => {
       link,
     });
     await meeting.save();
-    res.json({ meeting, link: `http://watcher.com/meetings/${link}` }); 
+    res.json({ meeting, link: `http://localhost:${PORT}/${link}` });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
