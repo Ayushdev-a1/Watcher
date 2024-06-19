@@ -15,13 +15,14 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
+    cpassword: {
+        type: String,
+        required: true
+    },
     phone: {
         type: String,
         required: true,
         unique: true
-    },
-    address: {
-        type: String,
     },
     city: {
         type: String,
@@ -34,9 +35,6 @@ const UserSchema = new Schema({
     country: {
         type: String,
         required: true
-    },
-    pincode: {
-        type: String,
     },
     date: {
         type: Date,

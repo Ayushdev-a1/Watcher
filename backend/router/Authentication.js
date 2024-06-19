@@ -8,15 +8,17 @@ const router = express.Router();
 
 // Register route
 router.post('/register', async (req, res) => {
-    const { name, email, password,phone, city, state, country } = req.body;
+    const { name, email,cpassword, password,phone, city, state, country } = req.body;
     try {
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ msg: 'User already exists' });
         }
-        user = new User({ name, email,phone, password, city, state, country });
+        if(cpassword==password) {
+          user = new User({ name, email,phone, cpassword, password, city, state, country });
         const salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(password, salt);
+        user.cpassword = await bcrypt.hash(cpassword, salt);
         await user.save();
         const payload = {
             user: {
@@ -27,6 +29,10 @@ router.post('/register', async (req, res) => {
             if (err) throw err;
             res.json({ token });
         });
+        }
+        else {
+          return res.status(400).json({ msg: 'Password and Confirm password should be same' });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
