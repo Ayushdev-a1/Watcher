@@ -1,28 +1,33 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-html{
+
+html {
     width: 100%;
     height: 100%;
 }
-body{
+
+body {
     width: 100%;
     height: 100%;
 }
-#root{
+
+#root {
     width: 100%;
     height: 100%;
 }
+
 .LoginBox {
-   display: flex;
-   align-items: center;
-   justify-content: center;
-   height: 100%;
-   background-color: whitesmoke;
-   width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: whitesmoke;
+    width: 100%;
 }
-.loginForm form{
+
+.loginForm form {
     width: 400px;
     height: 400px;
     border-radius: 10px;
@@ -31,20 +36,22 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
 }
-.loginForm form input{
+
+.loginForm form input {
     width: 95%;
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 36px;
-    border-top: 0  ;
+    border-top: 0;
     border-left: 0;
     border-right: 0;
-    box-shadow:0px 9px 0px -7px #918074;
-    
+    box-shadow: 0px 9px 0px -7px #918074;
+
 }
-.buttons{
+
+.buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -53,7 +60,7 @@ body{
     margin-top: 20px;
 }
 
-.buttons button{
+.buttons button {
     width: 100px;
     height: 40px;
     border-radius: 10px;
@@ -62,19 +69,20 @@ body{
     border: none;
     font-weight: bold;
     background-color: #918074;
-    border-top: 0  ;
+    border-top: 0;
     border-left: 0;
     border-right: 0;
-    box-shadow:0px 9px 0px -7px #918074;
-} 
-.buttons button:hover{
+    box-shadow: 0px 9px 0px -7px #918074;
+}
+
+.buttons button:hover {
     transform: scale(0.9);
     transition: all 0.5s ease-in-out;
     outline: none;
-    box-shadow:0px 0px 0px -7px #918074 ;
+    box-shadow: 0px 0px 0px -7px #918074;
 }
 
-.formInput{
+.formInput {
     width: 98%;
     height: 75%;
     display: flex;
@@ -82,12 +90,14 @@ body{
     align-items: center;
     justify-content: center;
 }
-.formInput input:focus{
+
+.formInput input:focus {
     outline: none;
-    box-shadow:0px 0px 0px -7px #918074 ;
+    box-shadow: 0px 0px 0px -7px #918074;
     transition: all 0.5s linear;
 }
-.do_not_register{
+
+.do_not_register {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -95,7 +105,7 @@ body{
 }
 
 /* //registerBox */
-.registerBox{
+.registerBox {
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -103,7 +113,8 @@ body{
     background-color: whitesmoke;
     width: 100%;
 }
-.image{
+
+.image {
     height: 100%;
     display: flex;
     align-items: center;
@@ -112,16 +123,18 @@ body{
     flex: 1;
     background-color: rgb(71 167 203 / 13%);
     overflow: hidden;
-    
+
 }
-.register{
+
+.register {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
-.continue{
+
+.continue {
     padding: 7px;
     border-radius: 7px;
     border: 0;
@@ -133,20 +146,23 @@ body{
     font-size: 20px;
     margin-bottom: 5%;
 }
-.continue:hover{
+
+.continue:hover {
     transition: all 0.5s ease-in-out;
     outline: none;
     background-color: #0956b5;
-    box-shadow:0px 0px 0px -7px #918074 ;
+    box-shadow: 0px 0px 0px -7px #918074;
 }
-.register form{
+
+.register form {
     width: 500px;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
 }
-.register form input{
+
+.register form input {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 9px;
@@ -154,61 +170,71 @@ body{
     margin-bottom: 6%;
     font-size: 20px;
 }
-.register h1{
+
+.register h1 {
     margin-bottom: 10%;
     width: 100%;
     text-align: center;
 }
-.Next_inputs{
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
+
+.Next_inputs {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
 }
-.name{
+
+.name {
     width: 100%;
 }
-#name{
+
+#name {
     width: 88%;
 }
-.otherfields{
-  width: 100%;
-  display: grid;
-  grid-template-columns: 50% 50%;
+
+.otherfields {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
-.passwordSection{
+
+.passwordSection {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-#password{
+
+#password {
     width: 88%;
 }
 
-.loader{
+.loader {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 /* home page */
-.homePage{
+.homePage {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-   
+    width: 98%;
+    height: 95%;
+    background-color: white;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px -1px #755a5a;
+    border-radius: 5px;
 }
-.sidenav{
+
+.sidenav {
     background-color: rgb(218, 214, 214);
+    /* position: absolute; */
+    width: 7%;
     height: 100%;
-    position: absolute;
-    left: 0;
-    width: 5%;
 }
-.sidenav nav{
+
+.sidenav nav {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -217,7 +243,9 @@ body{
     width: 100%;
     margin-top: 2%;
 }
-.firstSection ul li, .secondSection  ul li{
+
+.firstSection ul li,
+.secondSection ul li {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -229,8 +257,82 @@ body{
     border-radius: 5px;
 
 }
-li:hover{
+
+li:hover {
     transition: all 0.5s ease;
     cursor: pointer;
     background-color: #be5509;
+}
+
+.homebox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to top, #a3a1a1d1 70%, #71e671b3 70%);
+}
+
+/* desiging chats */
+.chats {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    background-color: white;
+    width: 40%;
+}
+.chatheading{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 18px 18px;
+}
+.chatheading h4{
+    font-weight: bold;
+}
+.chatheading span{
+    font-weight: bold;
+    font-size: 24px;
+    width: 17%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.search{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.search span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 92%;
+    border: 0;
+    border-radius: 8px;
+    padding: 0 13px;
+    background: #d9d3d3;
+}
+.search input{
+    width: 90%;
+    border: 0;
+    background: #d9d3d3;
+    padding: 9px;
+    border-radius: 0px
+}
+.search input:focus{
+    outline: none;
+}
+.friends{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 18px 18px;
+}
+.chatbox {
+    width: 100%;
+    background-color: whitesmoke;
 }
