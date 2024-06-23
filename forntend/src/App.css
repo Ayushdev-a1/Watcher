@@ -327,12 +327,104 @@ li:hover {
 }
 .friends{
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
-    padding: 18px 18px;
+    padding: 18px 7px;
+    margin-top: 8%;
+    height: 100%;
+}
+.freindsChat{
+    display: flex;
+    align-items: center;
+    height: 14%;
+    border-top: 1px solid gray;
+    padding: 8px 0;
+}
+.freindsChat:hover{
+    cursor: pointer;
+}
+.DP{
+    width: 13%;
+    height: 95%;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #0956b5;
+}
+.Chatname{
+    margin: 0 22px;
+    height: 100%;
+    width: 59%;
 }
 .chatbox {
     width: 100%;
     background-color: whitesmoke;
 }
+.messagerInfo{
+    display: flex;
+    align-items: center;
+    background: #d9d3d3;
+    height: 9%;
+    padding: 4px 13px;
+}
+.messageBox{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.mDP{
+    width: 6%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #0956b5;
+}
+.messangerName{
+    margin: 0 22px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    width: 80%;
+    font-size: 20px;
+    font-weight: bold;
+}
+.More{
+    font-size: 21px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 10%;
+    justify-content: space-around;
+}
+.More:only-child:hover{
+    cursor: pointer;
+}
+.messageArea{
+    background-color: #e4e2e2;;
+    width: 100%;
+    height: 81%;
+}
+.Messagewriting{
+    height: 10%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    background-color: #b7d7d39f;
+}
+.Messagewriting input{
+    height: 67%;
+    padding: 17px;
+    width: 91%;
+    border: 0;
+    border-radius: 6px;
+}
+.send{
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    margin: 0 16px;
+}
+.send:hover{
+    cursor: pointer;
+}  
