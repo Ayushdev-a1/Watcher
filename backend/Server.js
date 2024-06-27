@@ -25,23 +25,24 @@ app.use(bodyParser.json());
 app.use(cors());
 const userRouter = require('./router/Authentication');
 const meetingController = require('./router/MeetingController');
+const RequestController = require('./router/RequestController');
 
+//routers api
 app.use("/api/meetings", meetingController);
 app.use("/api/auth", userRouter);
+app.use("/api/friends", RequestController);
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+
 //messages
 io.on('connection', (socket) => {
   console.log('New client connected');
 
-  socket.on('join room', ({ meetingId, userId }) => {
-    socket.join(meetingId);
-    io.to(meetingId).emit('user joined', userId);
-  });
-
-  socket.on('send message', ({ meetingId, message }) => {
-    io.to(meetingId).emit('receive message', message);
+  socket.on('send friend request', ({ receiverEmail }) => {
+    io.emit('new friend request', receiverEmail);
   });
 
   socket.on('disconnect', () => {

@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
                 id: user.id
             }
         };
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
             if (err) throw err;
             res.json({ token });
         });
@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
                 id: user.id
             }
         };
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
             if (err) throw err;
             res.json({ token });
         });
@@ -69,29 +69,11 @@ router.post('/login', async (req, res) => {
 //getuser
 router.get("/getuser", fetchuser, async (req, res) => {
     try {
-      const user = await User.findById(req.user.id).select("-password -confirmpassword")
+      const user = await User.findById(req.user.id).select("-password -cpassword")
       res.send(user)
     } catch (error) {
       console.error("Internal server error:", error);
       res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-  router.put('/profile', fetchuser, async (req, res) => {
-    const { name, email } = req.body;
-  
-    try {
-      let user = await User.findById(req.user.id);
-      if (!user) return res.status(404).json({ msg: 'User not found' });
-  
-      user.name = name || user.name;
-      user.email = email || user.email;
-  
-      await user.save();
-  
-      res.json(user);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
     }
   });
 //profile updation
@@ -106,11 +88,27 @@ router.get("/getuser", fetchuser, async (req, res) => {
       user.email = email || user.email;
   
       await user.save();
-  
       res.json(user);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
     }
   });
+  //search user
+  router.get('/search' , fetchuser, async (req, res) => {
+    const { email } = req.query;
+  
+    try {
+      let user = await User.findOne({ email }).select("-password -cpassword -phone");
+      if (!user) {
+        return res.status(404).json({ msg: 'User not found' });
+      }
+      res.json({ user });
+    } catch (err) {
+      console.error('servor',err.message);
+      res.status(500).send('Server error');
+    }
+  });
+  
+
 module.exports = router;

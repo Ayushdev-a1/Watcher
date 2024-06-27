@@ -11,6 +11,16 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
+    friendRequests: [
+        {
+            senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+        },
+    ],
+    friends: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
     password: {
         type: String,
         required: true
@@ -40,7 +50,7 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now
     }
-})
+});
 
 const User = mongoose.model('User', UserSchema);
 

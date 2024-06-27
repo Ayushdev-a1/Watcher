@@ -30,7 +30,6 @@ export default function Login() {
         body: JSON.stringify(data),
       });
       const json = await res.json();
-      console.log(json);
       if (json.token) {
         localStorage.setItem('token', json.token);
         isLogin(true);

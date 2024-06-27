@@ -261,7 +261,7 @@ body {
 li:hover {
     transition: all 0.5s ease;
     cursor: pointer;
-    background-color: #be5509;
+     background-color: #bdd6be;
 }
 
 .homebox {
@@ -274,14 +274,14 @@ li:hover {
 }
 
 /* desiging chats */
-.chats {
+.chats , .setting , .profile , .friendsRequest{
     display: flex;
     flex-direction: column;
     align-items: baseline;
     background-color: white;
     width: 40%;
 }
-.chatheading{
+.chatheading , .FriendsHeading{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -428,3 +428,38 @@ li:hover {
 .send:hover{
     cursor: pointer;
 }  
+
+
+/* necessary */
+    .active {
+        background-color: #bdd6be;
+      }
+ .defualtimg{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: bold;
+    height: 100%;
+ }
+ /* freinds section */
+
+ .Status{
+    margin-top: 7%;
+    background-color: rgb(218, 214, 214);
+    width: 100%;
+    padding: 9px;
+    display: flex;
+   justify-content: flex-start;
+    align-items: center;
+ }
+ .Status button{
+    border: 0;
+    margin-right: 11px;
+    padding: 7px;
+    border-radius: 15px;
+ }
+ .Status button:hover{
+    cursor: pointer;
+    background-color: #bdd6be;
+ }

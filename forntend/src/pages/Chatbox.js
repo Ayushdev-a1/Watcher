@@ -29,12 +29,7 @@ export default function Chatbox({ chatName, chatID, messages, sendMessage }) {
           </span>
         </div>
         <div className="messageArea">
-          {messages.map((message, index) => (
-            <div key={index} className={`message ${message.sender === 'currentUserId' ? 'sent' : 'received'}`}>
-              <span className="content">{message.content}</span>
-              <span className="timestamp">{new Date(message.timestamp).toLocaleTimeString()}</span>
-            </div>
-          ))}
+
         </div>
         <div className="Messagewriting">
           <input type="text" placeholder='Type a message' value={messageContent} onChange={(e) => setMessageContent(e.target.value)} />
