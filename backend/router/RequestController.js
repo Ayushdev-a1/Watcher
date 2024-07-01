@@ -98,7 +98,6 @@ router.get('/getFriends', async (req, res) => {
   const { email } = req.query;
   try {
     const user = await User.findOne({ email }).populate('friends', 'email name chatID');
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

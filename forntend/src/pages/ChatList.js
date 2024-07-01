@@ -3,7 +3,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-export default function ChatList({ SelectedChat, setSelectedChat, setChatid ,setActiveSection, ActiveSection }) {
+export default function ChatList({ SelectedChat, setSelectedChat, setChatid, setActiveSection, ActiveSection }) {
     const [chatList, setChatList] = useState([]);
 
     useEffect(() => {
@@ -20,9 +20,12 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid ,set
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log('Fetched friends:', data.friends); // Debugging line
                 setChatList(data.friends);
-                const {chatID} = data.friends?.[0] || {};
-                setChatid(chatID);
+                if (data.friends.length > 0) {
+                    setChatid(data.friends[0].chatID);
+                    console.log('Initial chatID:', data.friends[0].chatID); // Debugging line
+                }
             } catch (error) {
                 console.error('Error fetching friends:', error);
             }
@@ -34,8 +37,13 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid ,set
     const openChat = (chat) => {
         setSelectedChat(chat);
         setActiveSection('chat');
+        if (chat.chatID) {
+            setChatid(chat.chatID);
+        } else {
+            console.warn('ChatID is undefined');
+        }
     };
-    
+
     return (
         <>
             <span className="chatheading">

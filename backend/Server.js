@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
   socket.on('send friend request', ({ receiverEmail }) => {
     io.emit('new friend request', receiverEmail);
   });
-  
+
   socket.on('sendMessage', async (message) => {
     try {
       console.log('New message received:', message);

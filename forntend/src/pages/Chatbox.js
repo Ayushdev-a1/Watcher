@@ -13,27 +13,31 @@ export default function Chatbox({ chatName, Chatid }) {
   const [messageContent, setMessageContent] = useState('');
 
   useEffect(() => {
+    if (!Chatid) return; // Prevent fetching if no Chatid is set
+
     socket.emit('joinRoom', Chatid);
 
     const fetchMessages = async () => {
       try {
         const response = await fetch(`http://localhost:5000/api/messages/getMessages?chatID=${Chatid}`);
         const data = await response.json();
-        setMessages(data);
+        setMessages(Array.isArray(data) ? data : []); // Ensure data is an array
       } catch (error) {
         console.error('Error fetching messages:', error);
+        setMessages([]);
       }
     };
     fetchMessages();
 
     socket.on('receiveMessage', (message) => {
-      console.log('Message received:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      if (message.chatID === Chatid) {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      }
     });
 
     return () => {
       socket.off('receiveMessage');
-      socket.emit('leaveRoom', Chatid); 
+      socket.emit('leaveRoom', Chatid);
     };
   }, [Chatid]);
 
@@ -45,7 +49,7 @@ export default function Chatbox({ chatName, Chatid }) {
       content: messageContent,
     };
 
-    console.log('Sending message:', newMessage);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
 
     socket.emit('sendMessage', newMessage);
 
@@ -83,14 +87,11 @@ export default function Chatbox({ chatName, Chatid }) {
         </span>
       </div>
       <div className="messageArea">
-        {messages.map((msg, index) => {
-          const isSent = msg.senderID === localStorage.getItem('User_id');
-          return (
-            <div key={index} className={`message ${isSent ? 'sent' : 'received'}`}>
-              <span>{msg.content}</span>
-            </div>
-          );
-        })}
+        {messages.map((msg, index) => (
+          <div key={index} className="message">
+            <span>{msg.content}</span>
+          </div>
+        ))}
       </div>
       <div className="Messagewriting">
         <input 

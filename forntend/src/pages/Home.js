@@ -137,7 +137,12 @@ export default function Home() {
           {ActiveSection === 'chat' && (
             <>
               <div className="chats">
-                <ChatList SelectedChat={selectedChat} setSelectedChat={setSelectedChat} ActiveSection={ActiveSection} setActiveSection={setActiveSection} setChatid = {setChatid} />
+                <ChatList 
+                SelectedChat={selectedChat} 
+                setSelectedChat={setSelectedChat} 
+                setChatid={setChatid} 
+                setActiveSection={setActiveSection} 
+                ActiveSection={ActiveSection} />
               </div>
             </>
           )}
@@ -146,7 +151,10 @@ export default function Home() {
               <div className="chatbox">
                 {selectedChat ? (
                   <> 
-                    <Chatbox chatID={selectedChat.id} Chatid ={Chatid} chatName={selectedChat.name} />
+                     <Chatbox 
+                    chatName={selectedChat?.name} 
+                    Chatid ={Chatid } 
+                />
                   </>
                 ) : (
                   <>
