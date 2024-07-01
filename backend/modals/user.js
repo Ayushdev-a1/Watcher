@@ -11,6 +11,11 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
+    Chatid:{
+        type:    mongoose.Schema.Types.ObjectId,
+        unique: true,
+        ref: 'message'
+    },
     friendRequests: [
         {
             senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

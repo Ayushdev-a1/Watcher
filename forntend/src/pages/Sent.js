@@ -14,10 +14,13 @@ export default function Sent() {
           },
         });
         if (!response.ok) {
+          if (response.status === 404) {
+            alert('User not found');
+          }
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        setRequests(data.friendRequests.filter(req => req.senderId.email === email));
+        setRequests(data.friendRequests.filter(req => req.senderId?.email === email));
       } catch (error) {
         console.error('Error fetching sent friend requests:', error);
       }
@@ -33,7 +36,7 @@ export default function Sent() {
       ) : (
         requests.map(request => (
           <div key={request._id}>
-            <p>{request.receiverId.email}</p>
+            <p>{request.receiverId?.email || 'Unknown'}</p>
             <p>Status: {request.status}</p>
           </div>
         ))

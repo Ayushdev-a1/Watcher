@@ -10,6 +10,13 @@ import ChatList from './ChatList';
 import Defult from './Defult';
 import FriendsRequest from './FriendsRequest';
 import Profile from './Profile';
+import { io } from "socket.io-client";
+
+const URL = "http://localhost:5001";
+const socket = io(URL, {
+  autoConnect: false,
+  transports: ["websocket"]
+});
 
 export default function Home() {
   const navigate = useNavigate();
@@ -19,8 +26,9 @@ export default function Home() {
   const [ActiveSection, setActiveSection] = useState('chat')
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState(null);
-  const [loggedin  , setLoggedin] = useState(false);
-  
+  const [loggedin, setLoggedin] = useState(false);
+  const [Chatid , setChatid] = useState();
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -28,41 +36,57 @@ export default function Home() {
     }
   }, [loggedOut, navigate]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem('token');
-    if(token){
+    if (token) {
       setLoggedin(true)
     }
   })
-//fetching user data
-const fetchProfileData = async () => {
-  const token = localStorage.getItem('token');
-  try {
-    const response = await fetch('http://localhost:5000/api/auth/getuser', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+  //fetching logeged in user data
+  const fetchProfileData = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/getuser', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.log('failed');
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      const data = await response.json();
+      setProfileData(data);
+      localStorage.setItem("email", data.email)
+      localStorage.setItem("User_id", data._id);
+    } catch (error) {
+      console.error('Error getting user data', error);
+      setError(error.message);
+    }
+  };
+  useEffect(() => {
+    if (loggedin) {
+      fetchProfileData();
+    }
+  }, [loggedin]);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to server");
     });
 
-    if (!response.ok) {
-      console.log('failed');
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const data = await response.json();
-    setProfileData(data);
-    localStorage.setItem("email", data.email)
-  } catch (error) {
-    console.error('Error getting user data', error);
-    setError(error.message);
-  }
-};
-useEffect(() => {
- if(loggedin){
-  fetchProfileData();
- }
-}, [loggedin]);
+    socket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("connect_error");
+    };
+  }, []);
   return (
     <>
       <div className="homebox">
@@ -86,7 +110,7 @@ useEffect(() => {
           </div>
           {ActiveSection === 'profile' && (
             <div className="profile">
-              <Profile fetchProfileData = {fetchProfileData} profileData = {profileData}  error = {error} />
+              <Profile fetchProfileData={fetchProfileData} profileData={profileData} error={error} />
             </div>
           )}
           {ActiveSection === 'meeting' && (
@@ -113,7 +137,7 @@ useEffect(() => {
           {ActiveSection === 'chat' && (
             <>
               <div className="chats">
-                <ChatList SelectedChat={selectedChat} setSelectedChat={setSelectedChat} ActiveSection={ActiveSection} setActiveSection={setActiveSection} />
+                <ChatList SelectedChat={selectedChat} setSelectedChat={setSelectedChat} ActiveSection={ActiveSection} setActiveSection={setActiveSection} setChatid = {setChatid} />
               </div>
             </>
           )}
@@ -121,8 +145,8 @@ useEffect(() => {
             <>
               <div className="chatbox">
                 {selectedChat ? (
-                  <>
-                    <Chatbox chatID={selectedChat.id} chatName={selectedChat.name} />
+                  <> 
+                    <Chatbox chatID={selectedChat.id} Chatid ={Chatid} chatName={selectedChat.name} />
                   </>
                 ) : (
                   <>

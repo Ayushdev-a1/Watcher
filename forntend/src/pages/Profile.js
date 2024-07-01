@@ -8,7 +8,7 @@ export default function Profile({ fetchProfileData , profileData , error}) {
 
   if (!profileData) {
     return <div>Loading...</div>;
-  } 
+  }
   return (
     <>
       <h1>Profile</h1>

@@ -67,7 +67,7 @@ export default function Received() {
       } else if (status === 'rejected') {
         alert('Friend request rejected.');
       }
-      // Update the state to remove the processed request and fetch updated friend list
+      
       setRequests(requests.filter(req => req.senderId._id !== senderId));
       fetchFriends();
     } catch (error) {

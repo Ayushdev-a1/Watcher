@@ -10,7 +10,12 @@ export default function FriendsRequest() {
   const [searchResult, setSearchResult] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  const socket = io('http://localhost:3000');
+  const URL = "http://localhost:5001";
+const socket = io(URL, {
+  autoConnect: false,
+  transports: ["websocket"]
+});
+
 
   useEffect(() => {
     socket.on('new friend request', (receiverEmail) => {
@@ -52,7 +57,7 @@ export default function FriendsRequest() {
 
   const sendFriendRequest = async (receiverEmail) => {
   try {
-    const senderEmail = localStorage.getItem('email');
+    const senderEmail = localStorage.getItem('email'); 
     
     if (!senderEmail || !receiverEmail) {
       throw new Error('Sender or receiver email is missing');
