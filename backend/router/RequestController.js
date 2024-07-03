@@ -97,17 +97,21 @@ router.post('/respondToRequest', async (req, res) => {
 router.get('/getFriends', async (req, res) => {
   const { email } = req.query;
   try {
-    const user = await User.findOne({ email }).populate('friends', 'email name chatID');
+    const user = await User.findOne({ email }).populate({
+      path: 'friends',
+      select: 'email name Chatid'
+    });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
+    // user.friends.forEach(friend => console.log('Friend:', friend));
     res.status(200).json({ friends: user.friends });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
 
 // //getsentfriedlist
 // router.get('/getFriends', async (req, res) => {

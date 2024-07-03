@@ -12,66 +12,6 @@ export default function Chatbox({ chatName, Chatid }) {
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
 
-  useEffect(() => {
-    if (!Chatid) return; // Prevent fetching if no Chatid is set
-
-    socket.emit('joinRoom', Chatid);
-
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/messages/getMessages?chatID=${Chatid}`);
-        const data = await response.json();
-        setMessages(Array.isArray(data) ? data : []); // Ensure data is an array
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        setMessages([]);
-      }
-    };
-    fetchMessages();
-
-    socket.on('receiveMessage', (message) => {
-      if (message.chatID === Chatid) {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      }
-    });
-
-    return () => {
-      socket.off('receiveMessage');
-      socket.emit('leaveRoom', Chatid);
-    };
-  }, [Chatid]);
-
-  const sendMessage = async () => {
-    if (messageContent.trim() === '') return;
-    const newMessage = {
-      chatID: Chatid,
-      senderID: localStorage.getItem('User_id'),
-      content: messageContent,
-    };
-
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    socket.emit('sendMessage', newMessage);
-
-    try {
-      const response = await fetch('http://localhost:5000/api/messages/sendMessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newMessage),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      setMessageContent('');
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
-  };
-
   return (
     <div className="messageBox">
       <div className="messagerInfo">
@@ -87,21 +27,18 @@ export default function Chatbox({ chatName, Chatid }) {
         </span>
       </div>
       <div className="messageArea">
-        {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <span>{msg.content}</span>
+          <div  className="message">
+            <span></span>
           </div>
-        ))}
+        
       </div>
       <div className="Messagewriting">
         <input 
           type="text" 
           placeholder='Type a message' 
           value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
         />
-        <span className="send" onClick={sendMessage}>
+        <span className="send">
           <IoMdSend />
         </span>
       </div>

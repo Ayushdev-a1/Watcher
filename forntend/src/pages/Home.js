@@ -153,7 +153,7 @@ export default function Home() {
                   <> 
                      <Chatbox 
                     chatName={selectedChat?.name} 
-                    Chatid ={Chatid } 
+                    Chatid ={Chatid}
                 />
                   </>
                 ) : (

@@ -1,56 +1,56 @@
-// messageController.js
 const express = require('express');
 const router = express.Router();
 const Message = require('../modals/message');
+const protectUser = require('../middleware/protectUser');
+const Conversation = require('../modals/Conversation');
 
-// Fetch messages for a chat
-router.get('/getMessages', async (req, res) => {
-  const { chatID } = req.query;
+//send message
+router.post('/sendMessage', protectUser, async (req, res) => {
   try {
-    const messages = await Message.find({ chatID })
-      .populate('senderID', 'name email')
-      .sort({ createdAt: 1 });
- 
-    const decryptedMessages = messages.map(message => ({
-      ...message.toObject(),
-      content: message.decryptContent(message.content),
-    }));
+    const { message } = req.body;
+    const { Chatid } = req.query;
+    const senderID = req.user.id;
 
-    res.status(200).json(decryptedMessages);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-});
+    let conversation = await Conversation.findOne({
+      participants: { $all: [Chatid, senderID] },
+    });
 
-// Send a message
-router.post('/sendMessage', async (req, res) => {
-  const { chatID, senderID, content } = req.body;
-  try {
-    if (!chatID || !senderID || !content) {
-      return res.status(400).json({ message: 'chatID, senderID, and content are required fields.' });
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [Chatid, senderID],
+      });
     }
 
-    const newMessage = new Message({ chatID, senderID, content });
-    await newMessage.save();
+    const newMessage = new Message({
+      senderID,
+      Chatid,
+      message,
+    });
+    conversation.messages.push(newMessage._id);
+    // await newMessage.save();
+    // await conversation.save();
 
-    res.status(201).json(newMessage);
+    await Promise.all([conversation.save(), newMessage.save()])
+
+    res.status(201).json('new message');
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error('Internal Server Error:', error);
+    res.status(500).json({ message: 'Internal Server Error', error });
   }
 });
 
+//get the message 
 
-// Receive a message (socket integration)
-router.post('/receiveMessage', (req, res) => {
-  const { message } = req.body;
+router.get('getMessage', async(req, res)=>{
   try {
-    res.status(200).json({ success: true, message: 'Message received successfully' });
+    const{Chatid} = req.query;
+    const senderID = req.user.id;
+     
+    
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
+    console.log('Internal Server Error:', error);
+    res.status(500).json({ message: 'Internal Server Error', error });
   }
-});
+})
 
 module.exports = router;

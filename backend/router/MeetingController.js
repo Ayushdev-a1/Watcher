@@ -1,12 +1,12 @@
 const express = require('express');
 const Meeting = require('../modals/meeting');
-const fetchuser = require('../middleware/fetchuser');
+const protectUser = require('../middleware/protectUser');
 const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 const PORT = process.env.PORT || 5000;
 //create meeting
 
-router.post('/create', fetchuser, async (req, res) => {
+router.post('/create', protectUser, async (req, res) => {
     const { title, startTime, endTime } = req.body;
     try {
      const link = uuidv4();
@@ -27,7 +27,7 @@ router.post('/create', fetchuser, async (req, res) => {
 });
 //get meetings created by the user all the way
 
-router.get('/getmeetings', fetchuser, async (req, res) => {
+router.get('/getmeetings', protectUser, async (req, res) => {
   try {
     const meetings = await Meeting.find({ host: req.user.id }).populate('host', 'username');
     res.json(meetings);
@@ -38,7 +38,7 @@ router.get('/getmeetings', fetchuser, async (req, res) => {
 });
 //join meeting by id
 
-router.get('/join_by_id', fetchuser, async (req, res) => {
+router.get('/join_by_id', protectUser, async (req, res) => {
   const { id } = req.params;
   try {
     const meeting = await Meeting.findById(id).populate('host', 'username');
@@ -57,7 +57,7 @@ router.get('/join_by_id', fetchuser, async (req, res) => {
 
 //join meeting
 
-router.post('/join_by_link', fetchuser, async (req, res) => {
+router.post('/join_by_link', protectUser, async (req, res) => {
   const { link } = req.body;
   try {
     const meeting = await Meeting.findOne({ link });
@@ -76,7 +76,7 @@ router.post('/join_by_link', fetchuser, async (req, res) => {
   }
 });
 //getMeeting
-router.get('/getmeeting', fetchuser , async (req, res) => {
+router.get('/getmeeting', protectUser , async (req, res) => {
     const { meetingId } = req.params;
     try {
       const meeting = await Meeting.findById(meetingId).populate('host participants', 'username');
@@ -90,7 +90,7 @@ router.get('/getmeeting', fetchuser , async (req, res) => {
 })
 //delete meeting
 
-router.delete('/delete', fetchuser, async (req, res) => {
+router.delete('/delete', protectUser, async (req, res) => {
     const { meetingId } = req.body;
     try {
       const meeting = await Meeting.findById(meetingId);

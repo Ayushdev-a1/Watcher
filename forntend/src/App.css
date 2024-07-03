@@ -468,7 +468,12 @@ li:hover {
     background-color: #f1f0f0; /* Light grey for received messages */
     text-align: left;
   }
-  
+  .messageArea{
+    overflow-y: scroll;
+  }
+  .messageArea::-webkit-scrollbar {
+    width: 100px;
+  }
  /* freinds section */
 
  .Status{

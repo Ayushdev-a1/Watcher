@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../modals/user');
-const fetchuser= require('../middleware/fetchuser');
+const protectUser= require('../middleware/protectUser');
 const mongoose = require('mongoose');
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
           jwt.sign(payload, process.env.JWT_SECRET, (err, token) => {
               if (err) throw err;
               res.json({ token });
-          });
+          }); 
       } else {
           return res.status(400).json({ msg: 'Password and Confirm password should be same' });
       }
@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
 });
 
 //getuser
-router.get("/getuser", fetchuser, async (req, res) => {
+router.get("/getuser", protectUser, async (req, res) => {
     try {
       const user = await User.findById(req.user.id).select("-password -cpassword")
       res.send(user)
@@ -78,7 +78,7 @@ router.get("/getuser", fetchuser, async (req, res) => {
     }
   });
 //profile updation
-  router.put('/profile', fetchuser, async (req, res) => {
+  router.put('/profile', protectUser, async (req, res) => {
     const { name, email } = req.body;
   
     try {
@@ -96,7 +96,7 @@ router.get("/getuser", fetchuser, async (req, res) => {
     }
   });
   //search user
-  router.get('/search' , fetchuser, async (req, res) => {
+  router.get('/search' , protectUser, async (req, res) => {
     const { email } = req.query;
   
     try {

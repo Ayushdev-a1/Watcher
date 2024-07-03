@@ -7,7 +7,7 @@ const connectDB = require('./db/mogoseConnect');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
-
+const Message = require('./modals/message');
 connectDB();
 
 dotenv.config();
@@ -49,22 +49,15 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', async (message) => {
     try {
-      console.log('New message received:', message);
-      const newMessage = new Message({ chatID: message.chatID, senderID: message.senderID, content: message.content });
+      console.log('New message received:', message.content);
+      const newMessage = new Message({ Chatid: message.Chatid, senderID: message.senderID, content: message.content });
       await newMessage.save();
-  
       // Emit to specific room
-      io.to(message.chatID).emit('receiveMessage', newMessage);
+      io.to(message.Chatid).emit('receiveMessage', newMessage);
     } catch (error) {
       console.error('Error saving message:', error);
     }
   });
-  
-  socket.on('sendMessage', (message) => {
-    console.log('New message received:', message);
-    io.emit('receiveMessage', message);
-  });
-
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });

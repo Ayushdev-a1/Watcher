@@ -20,11 +20,11 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log('Fetched friends:', data.friends); // Debugging line
                 setChatList(data.friends);
                 if (data.friends.length > 0) {
-                    setChatid(data.friends[0].chatID);
-                    console.log('Initial chatID:', data.friends[0].chatID); // Debugging line
+                    setChatid(data.friends[0].Chatid);
+                    console.log('Initial chatID:', data.friends[0].Chatid); 
+
                 }
             } catch (error) {
                 console.error('Error fetching friends:', error);
@@ -37,8 +37,9 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
     const openChat = (chat) => {
         setSelectedChat(chat);
         setActiveSection('chat');
-        if (chat.chatID) {
-            setChatid(chat.chatID);
+        if (chat.Chatid) {
+            setChatid(chat.Chatid);
+            console.log('selected chatID:', chat.Chatid);
         } else {
             console.warn('ChatID is undefined');
         }
