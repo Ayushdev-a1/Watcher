@@ -22,8 +22,8 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
                 const data = await response.json();
                 setChatList(data.friends);
                 if (data.friends.length > 0) {
-                    setChatid(data.friends[0].Chatid);
-                    console.log('Initial chatID:', data.friends[0].Chatid); 
+                    setChatid(data.friends[0]._id);
+                    console.log('Initial id:', data.friends[0]._id);
 
                 }
             } catch (error) {
@@ -38,8 +38,8 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
         setSelectedChat(chat);
         setActiveSection('chat');
         if (chat.Chatid) {
-            setChatid(chat.Chatid);
-            console.log('selected chatID:', chat.Chatid);
+            setChatid(chat._id);
+            console.log('selected chatID:', chat._id);
         } else {
             console.warn('ChatID is undefined');
         }

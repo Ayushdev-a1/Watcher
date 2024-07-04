@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../modals/user')
-const protectUser = async(req, res, next) => {
+const protectUser = async (req, res, next) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -8,11 +8,11 @@ const protectUser = async(req, res, next) => {
   }
   try {
     const data = jwt.verify(token, process.env.jwt_secret);
-    if(!data){
+    if (!data) {
       return res.status(401).json({ error: "Invalid token" });
     }
     const user = await User.findById(data.user.id);
-    if(!user){
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     req.user = user;
@@ -21,7 +21,7 @@ const protectUser = async(req, res, next) => {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ error: "Token expired. Please log in again." });
     }
-    res.status(500).json({ error: "Internal Server Error" , error });
+    res.status(500).json({ error: "Internal Server Error", error });
     console.log(error);
   }
 };

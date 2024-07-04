@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import unfriend from '../assets/unfriend.png'
 export default function FriendList() {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,15 +34,19 @@ export default function FriendList() {
   }
 
   return (
-    <div>
+    <div style={{height:"100%" , width:"100%"}}>
       {friends.length === 0 ? (
         <p>No friends found.</p>
       ) : (
-        <ul>
+        <ul className='AddedFriend'>
           {friends.map(friend => (
             <li key={friend._id}>
-              <p>Name: {friend.name}</p>
-              <p>Email: {friend.email}</p>
+              <span className='DP'></span>
+              <p style={{display:"flex" , alignItems:"center" , justifyContent:"space-around"}}>
+                {friend.name} 
+                <img title="Unfriend" src={unfriend} alt="unfriend" style={{width:"8%"}}/>
+              </p>
+
             </li>
           ))}
         </ul>

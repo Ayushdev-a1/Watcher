@@ -4,53 +4,64 @@ const Message = require('../modals/message');
 const protectUser = require('../middleware/protectUser');
 const Conversation = require('../modals/Conversation');
 
-//send message
+// Send message
 router.post('/sendMessage', protectUser, async (req, res) => {
   try {
     const { message } = req.body;
-    const { Chatid } = req.query;
+    const { id } = req.query;
     const senderID = req.user.id;
 
     let conversation = await Conversation.findOne({
-      participants: { $all: [Chatid, senderID] },
+      $or: [
+        { participants: { $all: [id, senderID] } },
+        { participants: { $all: [senderID, id] } }
+      ]
     });
 
     if (!conversation) {
       conversation = await Conversation.create({
-        participants: [Chatid, senderID],
+        participants: [id, senderID],
       });
     }
 
     const newMessage = new Message({
       senderID,
-      Chatid,
+      id,
       message,
     });
-    conversation.messages.push(newMessage._id);
-    // await newMessage.save();
-    // await conversation.save();
+    if(newMessage) conversation.messages.push(newMessage._id);
+    await Promise.all([conversation.save(), newMessage.save()]);
 
-    await Promise.all([conversation.save(), newMessage.save()])
-
-    res.status(201).json('new message');
+    res.status(201).json(newMessage);
   } catch (error) {
     console.error('Internal Server Error:', error);
     res.status(500).json({ message: 'Internal Server Error', error });
   }
 });
 
-//get the message 
-
-router.get('getMessage', async(req, res)=>{
+// Get messages
+router.get('/getMessage', protectUser, async (req, res) => {
   try {
-    const{Chatid} = req.query;
+    const { id } = req.query;
     const senderID = req.user.id;
-     
-    
+
+    const conversation = await Conversation.findOne({
+      $or: [
+        { participants: { $all: [id, senderID] } },
+        { participants: { $all: [senderID, id] } }
+      ]
+    }).populate('messages');
+
+    if (!conversation) {
+      return res.status(200).json([]);
+    }
+
+    const messages = conversation.messages;
+    res.status(200).json(messages);
   } catch (error) {
-    console.log('Internal Server Error:', error);
+    console.error('Internal Server Error:', error);
     res.status(500).json({ message: 'Internal Server Error', error });
   }
-})
+});
 
 module.exports = router;

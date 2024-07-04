@@ -74,7 +74,7 @@ router.get("/getuser", protectUser, async (req, res) => {
       res.send(user)
     } catch (error) {
       console.error("Internal server error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: "Internal Server Error frt" });
     }
   });
 //profile updation

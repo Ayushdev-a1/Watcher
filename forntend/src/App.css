@@ -72,14 +72,18 @@ body {
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    box-shadow: 0px 9px 0px -7px #918074;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #cacaca, #f0f0f0);
+    box-shadow: 8px 8px 15px #b3b3b3,
+        -8px -8px 15px #ffffff;
 }
 
 .buttons button:hover {
     transform: scale(0.9);
     transition: all 0.5s ease-in-out;
     outline: none;
-    box-shadow: 0px 0px 0px -7px #918074;
+    box-shadow: 4px 4px 15px #b3b3b3,
+        -4px -4px 15px #ffffff;
 }
 
 .formInput {
@@ -257,13 +261,15 @@ body {
     border-radius: 5px;
 
 }
-li{
+
+li {
     list-style: none !important;
 }
+
 li:hover {
     transition: all 0.5s ease;
     cursor: pointer;
-     background-color: #bdd6be;
+    background-color: #bdd6be;
 }
 
 .homebox {
@@ -276,24 +282,31 @@ li:hover {
 }
 
 /* desiging chats */
-.chats , .setting , .profile , .friendsRequest{
+.chats,
+.setting,
+.profile,
+.friendsRequest {
     display: flex;
     flex-direction: column;
     align-items: baseline;
     background-color: white;
     width: 40%;
 }
-.chatheading , .FriendsHeading{
+
+.chatheading,
+.FriendsHeading {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 18px 18px;
 }
-.chatheading h4{
+
+.chatheading h4 {
     font-weight: bold;
 }
-.chatheading span{
+
+.chatheading span {
     font-weight: bold;
     font-size: 24px;
     width: 17%;
@@ -301,12 +314,14 @@ li:hover {
     align-items: center;
     justify-content: space-between;
 }
-.search{
+
+.search {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
 }
+
 .search span {
     display: flex;
     align-items: center;
@@ -316,18 +331,22 @@ li:hover {
     border-radius: 8px;
     padding: 0 13px;
     background: #d9d3d3;
+    box-shadow: 0px 10px 20px -18px;
 }
-.search input{
+
+.search input {
     width: 90%;
     border: 0;
     background: #d9d3d3;
     padding: 9px;
-    border-radius: 0px
+    border-radius: 0px;
 }
-.search input:focus{
+
+.search input:focus {
     outline: none;
 }
-.friends{
+
+.friends {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -335,7 +354,8 @@ li:hover {
     margin-top: 8%;
     height: 100%;
 }
-.freindsChat{
+
+.freindsChat {
     display: flex;
     align-items: center;
     height: 14%;
@@ -343,49 +363,57 @@ li:hover {
     padding: 8px 4px;
     border-radius: 5px;
 }
-.freindsChat:hover{
+
+.freindsChat:hover {
     cursor: pointer;
     background-color: #d0cccc;
     border-radius: 5px;
     transition: all 0.5s ease-in-out;
 }
-.DP{
+
+.DP {
     width: 13%;
     height: 95%;
     border-radius: 50%;
     overflow: hidden;
     background-color: #0956b5;
 }
-.Chatname{
+
+.Chatname {
     margin: 0 22px;
     height: 100%;
     width: 59%;
 }
+
 .chatbox {
     width: 100%;
     background-color: whitesmoke;
 }
-.messagerInfo{
+
+.messagerInfo {
     display: flex;
     align-items: center;
     background: #d9d3d3;
     height: 9%;
     padding: 4px 13px;
 }
-.messageBox{
+
+.messageBox {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
-.mDP{
+
+.mDP {
     width: 6%;
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
     background-color: #0956b5;
 }
-.messangerName{
+
+.messangerName {
     margin: 0 22px;
     height: 100%;
     display: flex;
@@ -394,7 +422,8 @@ li:hover {
     font-size: 20px;
     font-weight: bold;
 }
-.More{
+
+.More {
     font-size: 21px;
     display: flex;
     align-items: center;
@@ -402,15 +431,19 @@ li:hover {
     width: 10%;
     justify-content: space-around;
 }
-.More:only-child:hover{
+
+.More:only-child:hover {
     cursor: pointer;
 }
-.messageArea{
-    background-color: #e4e2e2;;
+
+.messageArea {
+    background-color: #e4e2e2;
+    ;
     width: 100%;
     height: 81%;
 }
-.Messagewriting{
+
+.Messagewriting {
     height: 10%;
     width: 100%;
     display: flex;
@@ -418,80 +451,165 @@ li:hover {
     padding: 0 4px;
     background-color: #b7d7d39f;
 }
-.Messagewriting input{
+
+.Messagewriting input {
     height: 67%;
     padding: 17px;
     width: 91%;
     border: 0;
     border-radius: 6px;
 }
-.send{
+
+.send {
     font-size: 32px;
     display: flex;
     align-items: center;
     margin: 0 16px;
 }
-.send:hover{
+
+.send:hover {
     cursor: pointer;
-}  
+}
 
 
 /* necessary */
-    .active {
-        background-color: #bdd6be;
-      }
- .defualtimg{
+.active {
+    background-color: #bdd6be;
+}
+
+.defualtimg {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-weight: bold;
     height: 100%;
- }
- .message {
+}
+
+.message {
     display: flex;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
     max-width: 60%;
     word-wrap: break-word;
-  }
-  
-  .message.sent {
-    align-self: flex-end;
-    background-color: #daf8cb; /* Light green for sent messages */
-    text-align: right;
-  }
-  
-  .message.received {
-    align-self: flex-start;
-    background-color: #f1f0f0; /* Light grey for received messages */
-    text-align: left;
-  }
-  .messageArea{
-    overflow-y: scroll;
-  }
-  .messageArea::-webkit-scrollbar {
-    width: 100px;
-  }
- /* freinds section */
+}
 
- .Status{
+.message.sent {
+    align-self: flex-end;
+    background-color: #daf8cb;
+    /* Light green for sent messages */
+    text-align: right;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #f1f0f0;
+    /* Light grey for received messages */
+    text-align: left;
+}
+
+.messageArea {
+    overflow-y: scroll;
+}
+
+.messageArea::-webkit-scrollbar {
+    width: 100px;
+}
+
+/* freinds section */
+
+.Status {
     margin-top: 7%;
     background-color: rgb(218, 214, 214);
     width: 100%;
     padding: 9px;
     display: flex;
-   justify-content: flex-start;
+    justify-content: flex-start;
     align-items: center;
- }
- .Status button{
+}
+
+.Status button {
     border: 0;
     margin-right: 11px;
     padding: 7px;
     border-radius: 15px;
- }
- .Status button:hover{
+    background: linear-gradient(145deg, #f0f0f0, #cacaca);
+    box-shadow: 1px 1px 20px #bebebe, -2px -2px 20px #fff;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.Status button:hover {
+    transition: all 0.5s linear;
     cursor: pointer;
-    background-color: #bdd6be;
- }
+    background: linear-gradient(145deg, #d9dfc7, #cacaca);
+    transform: scale(0.9);
+}
+
+.friendlist {
+    width: 100%;
+    height: 100%;
+}
+
+.AddedFriend {
+    width: 100%;
+    height: 100%;
+}
+
+.AddedFriend li {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    box-shadow: 2px 0px 3px -1px black;
+}
+
+.AddedFriend li:hover {
+    transition: all 0.5s ease-in-out;
+    cursor: pointer;
+    background: rgb(235, 233, 233);
+    box-shadow: 2px 0px 3px -1px black;
+}
+
+.searchResult {
+    width: 100%;
+    overflow: hidden;
+    height: 9%;
+    z-index: 1;
+    margin-top: 12px;
+}
+
+.searchResult li {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    padding: 4px 1px;
+}
+
+.searchResult li:hover {
+    background: none;
+}
+
+.searchResult li button {
+    border: 1px solid;
+    padding: 6px;
+    border-radius: 50%;
+    width: 8%;
+    background: transparent;
+    box-shadow: 1px 1px 10px -1px black inset, -1px -1px 10px -1px rgb(115, 115, 115) inset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.searchResult li button:hover{
+    transition: all 0.5s ease-in-out;
+    cursor: pointer;
+    background: rgb(235, 233, 233);
+    box-shadow: 1px 1px 10px -1px black inset , 
+               -1px -1px 10px -1px rgb(115, 115, 115) inset;
+    transform: scale(0.9);
+}

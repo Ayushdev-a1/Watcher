@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 
 const messageSchema = new mongoose.Schema({
-  Chatid: {
+  id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'User'

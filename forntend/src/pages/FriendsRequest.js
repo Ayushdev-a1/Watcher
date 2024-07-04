@@ -1,9 +1,11 @@
-import React, { useState , useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import Received from './Received';
 import Sent from './Sent';
 import { io } from "socket.io-client";
 import Friendlist from './Friendlist';
+import { IoMdPersonAdd } from "react-icons/io";
+
 export default function FriendsRequest() {
   const [section, setSection] = useState('friendsList');
   const [email, setEmail] = useState('');
@@ -11,11 +13,10 @@ export default function FriendsRequest() {
   const [notifications, setNotifications] = useState([]);
 
   const URL = "http://localhost:5001";
-const socket = io(URL, {
-  autoConnect: false,
-  transports: ["websocket"]
-});
-
+  const socket = io(URL, {
+    autoConnect: false,
+    transports: ["websocket"]
+  });
 
   useEffect(() => {
     socket.on('new friend request', (receiverEmail) => {
@@ -31,23 +32,25 @@ const socket = io(URL, {
 
   const searchUser = async () => {
     try {
-
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:5000/api/auth/search?email=${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `${token}`
         }
       });
-    if (response.status === 404) {
-      alert('User not found');
-      setSearchResult(null);
-      return;
-    }
+
+      if (response.status === 404) {
+        alert('User not found');
+        setSearchResult(null);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       const data = await response.json();
       setSearchResult(data.user);
     } catch (error) {
@@ -56,43 +59,39 @@ const socket = io(URL, {
   };
 
   const sendFriendRequest = async (receiverEmail) => {
-  try {
-    const senderEmail = localStorage.getItem('email'); 
-    
-    if (!senderEmail || !receiverEmail) {
-      throw new Error('Sender or receiver email is missing');
+    try {
+      const senderEmail = localStorage.getItem('email'); 
+
+      if (!senderEmail || !receiverEmail) {
+        throw new Error('Sender or receiver email is missing');
+      }
+
+      const response = await fetch('http://localhost:5000/api/friends/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderEmail,
+          receiverEmail,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error sending friend request', error);
+      alert(`Error sending friend request: ${error.message}`);
     }
-
-    const response = await fetch('http://localhost:5000/api/friends/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        senderEmail,
-        receiverEmail,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Error: ${errorData.message}`);
-    }
-
-    socket.emit('send friend request', { receiverEmail });
-    alert('Friend request sent');
-  } catch (error) {
-    console.error('Error sending friend request', error);
-    alert(`Error sending friend request: ${error.message}`);
-  }
-};
-
+  };
 
   return (
     <>
       <div className="FriendsHeading">
         <h4>
-          <span>Friends</span>
+          <span>Find Friends</span>
         </h4>
       </div>
       <span className="search">
@@ -103,15 +102,17 @@ const socket = io(URL, {
             placeholder="Search by Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && searchUser()}
           />
-          <button onClick={searchUser}>Search</button>
         </span>
       </span>
       {searchResult && (
-        <div className="searchResult">
-          <p>{searchResult.email}</p>
-          <button onClick={() => sendFriendRequest(searchResult.email)}>Send Friend Request</button>
-        </div>
+        <ul className="searchResult">
+          <li>
+            <p>{searchResult.email}</p>
+            <button onClick={() => sendFriendRequest(searchResult.email)}><IoMdPersonAdd/></button>
+          </li>
+        </ul>
       )}
       <div className="Status">
         <button onClick={() => setSection('friendsList')}>Friends</button>

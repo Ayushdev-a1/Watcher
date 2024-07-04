@@ -11,6 +11,7 @@ import Defult from './Defult';
 import FriendsRequest from './FriendsRequest';
 import Profile from './Profile';
 import { io } from "socket.io-client";
+import Loader from './Loader';
 
 const URL = "http://localhost:5001";
 const socket = io(URL, {
@@ -28,7 +29,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [loggedin, setLoggedin] = useState(false);
   const [Chatid , setChatid] = useState();
-
+  const [Loading , setLoading] = useState();
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -50,7 +51,7 @@ export default function Home() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `${token}`
         }
       });
 
@@ -58,6 +59,7 @@ export default function Home() {
         console.log('failed');
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      
       const data = await response.json();
       setProfileData(data);
       localStorage.setItem("email", data.email)

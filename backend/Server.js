@@ -20,15 +20,16 @@ const io = socketIo(server, {
   }
 });
 const PORT = process.env.PORT || 5000;
-const Server_PORT = process.env.SERVER_PORT ||5001
+const Server_PORT = process.env.SERVER_PORT || 5001;
+
 app.use(bodyParser.json());
 app.use(cors());
 const userRouter = require('./router/Authentication');
 const meetingController = require('./router/MeetingController');
 const RequestController = require('./router/RequestController');
-const MessageController = require('./router/MessageController')
+const MessageController = require('./router/MessageController');
 
-//routers api
+// routers api
 app.use("/api/meetings", meetingController);
 app.use("/api/auth", userRouter);
 app.use("/api/friends", RequestController);
@@ -38,30 +39,30 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// io connection 
+const userSocketMap = {};
 
-//messages
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log('New client connected', socket.id);
+  const { userId } = socket.handshake.query;
+  userSocketMap[userId] = socket.id;
 
-  socket.on('send friend request', ({ receiverEmail }) => {
-    io.emit('new friend request', receiverEmail);
-  });
+  io.emit('onlineUsers', Object.keys(userSocketMap));
 
-  socket.on('sendMessage', async (message) => {
-    try {
-      console.log('New message received:', message.content);
-      const newMessage = new Message({ Chatid: message.Chatid, senderID: message.senderID, content: message.content });
-      await newMessage.save();
-      // Emit to specific room
-      io.to(message.Chatid).emit('receiveMessage', newMessage);
-    } catch (error) {
-      console.error('Error saving message:', error);
+  socket.on('sendMessage', ({ message, recipientId }) => {
+    const recipientSocketId = userSocketMap[recipientId];
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit('receiveMessage', { message, senderId: userId });
     }
   });
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('Client disconnected', socket.id);
+    delete userSocketMap[userId];
+    io.emit('onlineUsers', Object.keys(userSocketMap));
   });
-}); 
+});
+
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
 }); 
