@@ -1,113 +1,148 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { IoMdVideocam } from "react-icons/io";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { IoMdSend } from "react-icons/io";
-import { socketContext } from '../context/SocketContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { IoMdVideocam, IoMdSend } from 'react-icons/io';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { io } from 'socket.io-client';
+import Typing from '../Animation/Typing';
+
+//socketConnection
+const socket = io("http://localhost:5001", {
+    transports: ['websocket'],
+    query: {
+        userId: localStorage.getItem('User_id')
+    }
+});
 
 export default function Chatbox({ chatName, Chatid }) {
-  const { socket } = useContext(socketContext);
-  const [messages, setMessages] = useState([]);
-  const [messageContent, setMessageContent] = useState('');
+    const [messages, setMessages] = useState([]);
+    const [messageContent, setMessageContent] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [typingStatus, setTypingStatus] = useState(null);
+    const messageEndRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
 
-  // Getting messages
-  useEffect(() => {
-    if (!Chatid) return;
-    socket.emit('joinRoom', Chatid);
+    // Function to fetch initial messages
+    useEffect(() => {
+        fetchMessages();
+        socket.on('newMessage', (newMessage) => {
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+        });
+        socket.on('typing', ({ userId, isTyping }) => {
+            if (isTyping) {
+                setTypingStatus(<Typing/>);
+            } else {
+                setTypingStatus(null);
+            }
+        });
+        return () => {
+            socket.off('newMessage');
+            socket.off('typing');
+        };
+    }, [Chatid]);
 
     const fetchMessages = async () => {
-      try {
-        const URL = `http://localhost:5000/api/messages/getMessage?id=${Chatid}`;
-        const response = await fetch(URL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-          },
-        });
-        if (!response.ok) {
-          console.log('failed');
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        try {
+            const URL = `http://localhost:5000/api/messages/getMessage?id=${Chatid}`;
+            const response = await fetch(URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+            });
+            if (!response.ok) {
+                console.log('Failed to fetch messages');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            setMessages(data);
+            console.log('Initial messages fetched', data);
+        } catch (error) {
+            console.error('Error fetching initial messages:', error);
         }
-        const data = await response.json();
-        setMessages(data);
-        console.log(data);
-      } catch (error) {
-        console.log(error, "Failed to fetch messages");
-      }
     };
-    fetchMessages();
 
-    // Listen for incoming messages
-    socket.on('receiveMessage', (newMessage) => {
-      setMessages(prevMessages => [...prevMessages, newMessage]);
-    });
+    // Function to send message
+    const sendMessage = async () => {
+        if (messageContent.trim() === '') return;
 
-    return () => {
-      socket.emit('leaveRoom', Chatid);
-      socket.off('receiveMessage');  // Clean up listener
+        const URL = `http://localhost:5000/api/messages/sendMessage?id=${Chatid}`;
+        try {
+            const response = await fetch(URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+                body: JSON.stringify({ message: messageContent }),
+            });
+            if (!response.ok) {
+                console.log('Failed to send message');
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const newMessage = await response.json();
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+            setMessageContent(''); // Clear message input
+            console.log('Message sent:', newMessage);
+
+            // Emit the new message to other users
+            socket.emit('sendMessage', { Chatid, message: messageContent });
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
     };
-  }, [Chatid, socket]); 
 
-  // Sending messages
-  const sendMessage = async () => {
-    if (messageContent.trim() === '') return;
-    const URL = `http://localhost:5000/api/messages/sendMessage?id=${Chatid}`;
-    try {
-      const response = await fetch(URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ message: messageContent }),
-      });
-      if (!response.ok) {
-        console.log('failed');
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const newMessage = await response.json();
-      socket.emit('sendMessage', { ...newMessage, Chatid });  // Emit the message via Socket.IO
-      setMessages([...messages, newMessage]);
-      setMessageContent('');
-      console.log("message sent", newMessage);
-    } catch (error) {
-      console.log(error, "Error sending message");
-    }
-  };
+    const handleTyping = (e) => {
+        setMessageContent(e.target.value);
+        if (!isTyping) {
+            setIsTyping(true);
+            socket.emit('typing', { Chatid, isTyping: true });
+        }
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+            socket.emit('typing', { Chatid, isTyping: false });
+        }, 2000);
+    };
 
-  return (
-    <div className="messageBox">
-      <div className="messagerInfo">
-        <span className="mDP">
-          {/* Display profile picture or icon */}
-        </span>
-        <span className="messangerName">
-          {chatName}
-        </span>
-        <span className='More'>
-          <IoMdVideocam style={{ cursor: 'pointer' }} />
-          <BsThreeDotsVertical style={{ cursor: 'pointer' }} />
-        </span>
-      </div>
-      <div className="messageArea">
-        {messages.map((msg, index) => (
-          <div key={index} className="message">
-            <span>{msg.senderID}: {msg.message}</span>
-          </div>
-        ))}
-      </div>
-      <div className="Messagewriting">
-        <input 
-          type="text" 
-          placeholder='Type a message'
-          value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-        />
-        <span className="send" onClick={sendMessage}>
-          <IoMdSend />
-        </span>
-      </div>
-    </div>
-  );
+    useEffect(() => {
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
+
+    return (
+        <div className="messageBox">
+            <div className="messagerInfo">
+                <span className="mDP">{/* Display profile picture or icon */}</span>
+                <span className="messangerName">{chatName}</span>
+                <span className="More">
+                    <IoMdVideocam style={{ cursor: 'pointer' }} />
+                    <BsThreeDotsVertical style={{ cursor: 'pointer' }} />
+                </span>
+            </div>
+            <div className="messageArea">
+                {messages.map((msg, index) => (<>
+                    <div key={index} className={`message ${msg.id === Chatid ? 'sent' : 'received'}`}>
+                        <span>{msg.message}</span>
+                        <span className="time">{new Date(msg.createdAt).toLocaleTimeString()}</span>
+                    </div>
+                    </>
+                ))}
+                <div ref={messageEndRef}></div>
+                {typingStatus && <div className="typingStatus">{typingStatus}</div>}
+            </div>
+            <div className="Messagewriting">
+                <input
+                    type="text"
+                    placeholder="Type a message"
+                    value={messageContent}
+                    onChange={handleTyping}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                />
+                <span className="send" onClick={sendMessage}>
+                    <IoMdSend />
+                </span>
+            </div>
+        </div>
+    );
 }

@@ -399,10 +399,13 @@ li:hover {
 }
 
 .messageBox {
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
 }
 
 .mDP {
@@ -438,9 +441,12 @@ li:hover {
 
 .messageArea {
     background-color: #e4e2e2;
-    ;
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    height: 81%;
 }
 
 .Messagewriting {
@@ -471,6 +477,22 @@ li:hover {
     cursor: pointer;
 }
 
+.message {
+    max-width: 70%;
+    padding: 8px;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background-color: #dcf8c6;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #fff;
+}
 
 /* necessary */
 .active {
@@ -493,24 +515,13 @@ li:hover {
     margin-bottom: 10px;
     max-width: 60%;
     word-wrap: break-word;
+    flex-direction: column;
 }
 
-.message.sent {
-    align-self: flex-end;
-    background-color: #daf8cb;
-    /* Light green for sent messages */
-    text-align: right;
-}
-
-.message.received {
-    align-self: flex-start;
-    background-color: #f1f0f0;
-    /* Light grey for received messages */
-    text-align: left;
-}
-
-.messageArea {
-    overflow-y: scroll;
+.message .time {
+    font-size: 0.5em;
+    color: #999;
+    margin-left: 10px;
 }
 
 .messageArea::-webkit-scrollbar {
@@ -605,11 +616,32 @@ li:hover {
     align-items: center;
     justify-content: center;
 }
-.searchResult li button:hover{
+
+.searchResult li button:hover {
     transition: all 0.5s ease-in-out;
     cursor: pointer;
     background: rgb(235, 233, 233);
-    box-shadow: 1px 1px 10px -1px black inset , 
-               -1px -1px 10px -1px rgb(115, 115, 115) inset;
+    box-shadow: 1px 1px 10px -1px black inset,
+        -1px -1px 10px -1px rgb(115, 115, 115) inset;
     transform: scale(0.9);
+}
+
+.onlineBadge {
+    -webkit-border-radius: 125px;
+    border-radius: 125px;
+    height: 11px;
+    width: 11px;
+}
+
+.notificationBadge {
+    font-weight: bold;
+}
+
+.online {
+    background-color: green;
+    -webkit-box-shadow: 10px 10px 11px #25a513, -10px -10px 11px #3fff21;
+    box-shadow: 10px 10px 11px #25a513, -10px -10px 11px #3fff21;
+}
+.offline {
+    display: none;
 }

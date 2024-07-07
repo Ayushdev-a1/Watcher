@@ -10,40 +10,31 @@ import ChatList from './ChatList';
 import Defult from './Defult';
 import FriendsRequest from './FriendsRequest';
 import Profile from './Profile';
-import { io } from "socket.io-client";
+// import { useSocketContext } from '../context/SocketContext';
 import Loader from './Loader';
-
-const URL = "http://localhost:5001";
-const socket = io(URL, {
-  autoConnect: false,
-  transports: ["websocket"]
-});
 
 export default function Home() {
   const navigate = useNavigate();
+  // const { socket, onlineUsers } = useSocketContext();
   const [loggedOut, setLoggedOut] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [ActiveSection, setActiveSection] = useState('chat')
+  const [ActiveSection, setActiveSection] = useState('chat');
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState(null);
   const [loggedin, setLoggedin] = useState(false);
-  const [Chatid , setChatid] = useState();
-  const [Loading , setLoading] = useState();
+  const [Chatid, setChatid] = useState(null);
+  const [Loading, setLoading] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
+    } else {
+      setLoggedin(true);
     }
   }, [loggedOut, navigate]);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setLoggedin(true)
-    }
-  })
-  //fetching logeged in user data
+  // Fetching logged-in user data
   const fetchProfileData = async () => {
     const token = localStorage.getItem('token');
     try {
@@ -62,33 +53,20 @@ export default function Home() {
       
       const data = await response.json();
       setProfileData(data);
-      localStorage.setItem("email", data.email)
+      localStorage.setItem("email", data.email);
       localStorage.setItem("User_id", data._id);
     } catch (error) {
       console.error('Error getting user data', error);
       setError(error.message);
     }
   };
+
   useEffect(() => {
     if (loggedin) {
       fetchProfileData();
     }
   }, [loggedin]);
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    socket.on("connect_error", (error) => {
-      console.error("Connection error:", error);
-    });
-
-    return () => {
-      socket.off("connect");
-      socket.off("connect_error");
-    };
-  }, []);
   return (
     <>
       <div className="homebox">
@@ -118,33 +96,34 @@ export default function Home() {
           {ActiveSection === 'meeting' && (
             <>
               <div className="meeting">
-                <h1>meeting</h1>
+                <h1>Meeting</h1>
               </div>
             </>
           )}
           {ActiveSection === 'settings' && (
             <>
               <div className="setting">
-                <h1>setting</h1>
+                <h1>Settings</h1>
               </div>
             </>
           )}
-
-          {ActiveSection === 'Friends' && (<>
-            <div className="friendsRequest">
-              <FriendsRequest />
-            </div>
-          </>)}
-
+          {ActiveSection === 'Friends' && (
+            <>
+              <div className="friendsRequest">
+                <FriendsRequest />
+              </div>
+            </>
+          )}
           {ActiveSection === 'chat' && (
             <>
               <div className="chats">
                 <ChatList 
-                SelectedChat={selectedChat} 
-                setSelectedChat={setSelectedChat} 
-                setChatid={setChatid} 
-                setActiveSection={setActiveSection} 
-                ActiveSection={ActiveSection} />
+                  SelectedChat={selectedChat} 
+                  setSelectedChat={setSelectedChat} 
+                  setChatid={setChatid} 
+                  setActiveSection={setActiveSection} 
+                  ActiveSection={ActiveSection} 
+                />
               </div>
             </>
           )}
@@ -152,22 +131,16 @@ export default function Home() {
             <>
               <div className="chatbox">
                 {selectedChat ? (
-                  <> 
-                     <Chatbox 
+                  <Chatbox 
                     chatName={selectedChat?.name} 
-                    Chatid ={Chatid}
-                />
-                  </>
+                    Chatid={Chatid} 
+                  />
                 ) : (
-                  <>
-                    <Defult />
-                  </>
+                  <Defult profileData={profileData}/>
                 )}
               </div>
             </>
           )}
-
-
         </div>
       </div>
     </>

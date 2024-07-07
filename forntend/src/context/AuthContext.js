@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [user , setUser] = useState();
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [profileData, setProfileData] = useState(null);
+    const [profileData, setProfileData] = useState("");
     const navigate = useNavigate();
 
     const register = async (email, name, phone, country, state, city, password, cpassword) => {
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
                     'Authorization': `${token}`
                 }
             });
-
+ 
             if (!response.ok) {
                 console.log('failed');
                 throw new Error(`HTTP error! Status: ${response.status}`);

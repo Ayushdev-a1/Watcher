@@ -3,6 +3,7 @@ const router = express.Router();
 const Message = require('../modals/message');
 const protectUser = require('../middleware/protectUser');
 const Conversation = require('../modals/Conversation');
+const { io, getReceiverSocketId } = require('../socket/scoket'); 
 
 // Send message
 router.post('/sendMessage', protectUser, async (req, res) => {
@@ -29,8 +30,19 @@ router.post('/sendMessage', protectUser, async (req, res) => {
       id,
       message,
     });
-    if(newMessage) conversation.messages.push(newMessage._id);
+
+    if (newMessage) {
+      conversation.messages.push(newMessage._id);
+    }
+
     await Promise.all([conversation.save(), newMessage.save()]);
+
+    const receiverSocketId = getReceiverSocketId(id);
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit('newMessage', newMessage);
+      // console.log('New message emitted to receiver:', newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {

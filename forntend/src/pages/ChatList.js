@@ -64,7 +64,11 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
                 {chatList.map(chat => (
                     <span className="freindsChat" key={chat._id} onClick={() => openChat(chat)}>
                         <span className='DP'></span>
-                        <span className="Chatname">{chat.name}</span>
+                        <span className="Chatname">
+                        {chat.name}
+                        <p className='notificationBadge'>+1 new message</p>
+                        </span>
+                        <span className='onlineBadge'></span>
                     </span>
                 ))}
             </span>

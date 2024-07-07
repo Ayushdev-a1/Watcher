@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
-
-export default function Profile({ fetchProfileData , profileData , error}) {
+import React, { useState, useEffect ,useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+export default function Profile() {
   
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!profileData) {
-    return <div>Loading...</div>;
-  }
+  const{profileData} = useContext(AuthContext)
+ 
   return (
     <>
       <h1>Profile</h1>

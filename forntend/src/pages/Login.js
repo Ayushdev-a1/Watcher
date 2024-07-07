@@ -12,7 +12,7 @@ export default function Login() {
 
   const movetoForgotpassword = () => {
     nav('/forgotpassword');
-  };
+  }; 
 
   const movetoRegister = () => {
     nav('/register');
