@@ -9,8 +9,8 @@ export default function Defult() {
     <>
       <div className="defualtimg">
         <img src={DefultImg} alt="default" />
-        <p>Hi👋{profileData.name}</p>
-        <h1>Watch & chat ∼ Watcher</h1>
+        <p style={{fontWeight:"bold"}}>Hi👋{profileData.name}</p>
+        <h1 style={{fontWeight:"bold"}}>Watch & chat ∼ Watcher</h1>
       </div>
     </>
   );

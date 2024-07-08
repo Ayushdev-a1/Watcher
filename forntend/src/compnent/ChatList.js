@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useSocketContext } from '../context/SocketContext';
 
 export default function ChatList({ SelectedChat, setSelectedChat, setChatid, setActiveSection, ActiveSection }) {
     const [chatList, setChatList] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+
+    const { newsocket } = useSocketContext();
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -24,7 +28,6 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
                 if (data.friends.length > 0) {
                     setChatid(data.friends[0]._id);
                     console.log('Initial id:', data.friends[0]._id);
-
                 }
             } catch (error) {
                 console.error('Error fetching friends:', error);
@@ -32,7 +35,21 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
         };
 
         fetchFriends();
-    }, []);
+    }, [setChatid]);
+
+    useEffect(() => {
+        if (newsocket) {
+            newsocket.on('getOnlineUsers', (users) => {
+                setOnlineUsers(users);
+            });
+        }
+
+        return () => {
+            if (newsocket) {
+                newsocket.off('getOnlineUsers');
+            }
+        };
+    }, [newsocket]);
 
     const openChat = (chat) => {
         setSelectedChat(chat);
@@ -44,6 +61,8 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
             console.warn('ChatID is undefined');
         }
     };
+
+    const isUserOnline = (userId) => onlineUsers.includes(userId);
 
     return (
         <>
@@ -65,10 +84,10 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
                     <span className="freindsChat" key={chat._id} onClick={() => openChat(chat)}>
                         <span className='DP'></span>
                         <span className="Chatname">
-                        {chat.name}
-                        <p className='notificationBadge'>+1 new message</p>
+                            {chat.name}
+                            <p className='notificationBadge'>+1 new message</p>
                         </span>
-                        <span className='onlineBadge'></span>
+                        <span className={`onlineBadge ${isUserOnline(chat._id) ? 'online' : 'offline'}`}></span>
                     </span>
                 ))}
             </span>

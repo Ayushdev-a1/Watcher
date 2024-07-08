@@ -2,40 +2,55 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { io } from 'socket.io-client';
 import { AuthContext } from './AuthContext';
 
-export const socketContext = createContext();
+export const SocketContext = createContext();
+
 export const useSocketContext = () => {
-  return useContext(socketContext);
+  return useContext(SocketContext);
 };
+
 export const SocketProvider = ({ children }) => {
-  const { loggedIn, profileData } = useContext(AuthContext);
+  const { loggedIn } = useContext(AuthContext);
   const [newsocket, setNewSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const User_id = localStorage.getItem('User_id');
+
   useEffect(() => {
-    if (loggedIn && User_id) {
+    console.log(User_id)
+    if (User_id) {
+      console.log("Establishing socket connection...");
       const Socket = io('http://localhost:5001', {
         transports: ['websocket'],
         query: {
-          userId: User_id ,
+          userId: User_id,
         },
       });
 
       setNewSocket(Socket);
 
-      Socket.on('getOnlineUsers', (users) => {
-        setOnlineUsers(users);
+      Socket.on('connect', () => {
+        console.log("Socket connected:", Socket.id);
       });
 
+      Socket.on('disconnect', () => {
+        console.log("Socket disconnected");
+      });
+
+      Socket.on('getOnlineUsers', (users) => {
+        console.log("Online users:", users);
+        setOnlineUsers(users);
+      });
       return () => {
         Socket.close();
         setNewSocket(null);
       };
+    } else {
+      console.log("Not logged in or User ID missing");
     }
-  }, [loggedIn]);
+  }, [loggedIn, User_id]);
 
   return (
-    <socketContext.Provider value={{ newsocket, onlineUsers }}>
+    <SocketContext.Provider value={{ newsocket, onlineUsers }}>
       {children}
-    </socketContext.Provider>
+    </SocketContext.Provider>
   );
 };

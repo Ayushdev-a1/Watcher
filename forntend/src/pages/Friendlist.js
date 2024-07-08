@@ -19,7 +19,7 @@ export default function FriendList() {
         }
         const data = await response.json();
         setFriends(data.friends);
-        setLoading(false);
+        setLoading(false); 
       } catch (error) {
         console.error('Error fetching friends:', error);
         setLoading(false);

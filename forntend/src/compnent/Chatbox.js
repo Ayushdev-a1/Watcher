@@ -1,43 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IoMdVideocam, IoMdSend } from 'react-icons/io';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import { io } from 'socket.io-client';
 import Typing from '../Animation/Typing';
-
-//socketConnection
-const socket = io("http://localhost:5001", {
-    transports: ['websocket'],
-    query: {
-        userId: localStorage.getItem('User_id')
-    }
-});
+import { useSocketContext } from '../context/SocketContext';
+import FilePreview from './FilePreview.js';
+import { ImAttachment } from "react-icons/im";
 
 export default function Chatbox({ chatName, Chatid }) {
+    const { newsocket } = useSocketContext();
     const [messages, setMessages] = useState([]);
     const [messageContent, setMessageContent] = useState('');
+    const [file, setFile] = useState(null);
     const [isTyping, setIsTyping] = useState(false);
     const [typingStatus, setTypingStatus] = useState(null);
     const messageEndRef = useRef(null);
     const typingTimeoutRef = useRef(null);
 
-    // Function to fetch initial messages
     useEffect(() => {
         fetchMessages();
-        socket.on('newMessage', (newMessage) => {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-        });
-        socket.on('typing', ({ userId, isTyping }) => {
-            if (isTyping) {
-                setTypingStatus(<Typing/>);
-            } else {
-                setTypingStatus(null);
-            }
-        });
+        if (newsocket) {
+            newsocket.on('newMessage', (newMessage) => {
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+            });
+            newsocket.on('typing', ({ userId, isTyping }) => {
+                if (isTyping) {
+                    setTypingStatus(<Typing />);
+                } else {
+                    setTypingStatus(null);
+                }
+            });
+        }
         return () => {
-            socket.off('newMessage');
-            socket.off('typing');
+            if (newsocket) {
+                newsocket.off('newMessage');
+                newsocket.off('typing');
+            }
         };
-    }, [Chatid]);
+    }, [Chatid, newsocket]);
 
     const fetchMessages = async () => {
         try {
@@ -50,42 +49,42 @@ export default function Chatbox({ chatName, Chatid }) {
                 },
             });
             if (!response.ok) {
-                console.log('Failed to fetch messages');
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
             setMessages(data);
-            console.log('Initial messages fetched', data);
         } catch (error) {
             console.error('Error fetching initial messages:', error);
         }
     };
 
-    // Function to send message
     const sendMessage = async () => {
-        if (messageContent.trim() === '') return;
+        if (messageContent.trim() === '' && !file) return;
 
         const URL = `http://localhost:5000/api/messages/sendMessage?id=${Chatid}`;
+        const formData = new FormData();
+        formData.append('message', messageContent);
+        if (file) formData.append('file', file);
+
         try {
             const response = await fetch(URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     Authorization: `${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify({ message: messageContent }),
+                body: formData,
             });
             if (!response.ok) {
-                console.log('Failed to send message');
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const newMessage = await response.json();
             setMessages((prevMessages) => [...prevMessages, newMessage]);
-            setMessageContent(''); // Clear message input
-            console.log('Message sent:', newMessage);
+            setMessageContent('');
+            setFile(null);
 
-            // Emit the new message to other users
-            socket.emit('sendMessage', { Chatid, message: messageContent });
+            if (newsocket) {
+                newsocket.emit('sendMessage', { Chatid, message: messageContent });
+            }
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -93,14 +92,16 @@ export default function Chatbox({ chatName, Chatid }) {
 
     const handleTyping = (e) => {
         setMessageContent(e.target.value);
-        if (!isTyping) {
+        if (!isTyping && newsocket) {
             setIsTyping(true);
-            socket.emit('typing', { Chatid, isTyping: true });
+            newsocket.emit('typing', { Chatid, isTyping: true });
         }
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
             setIsTyping(false);
-            socket.emit('typing', { Chatid, isTyping: false });
+            if (newsocket) {
+                newsocket.emit('typing', { Chatid, isTyping: false });
+            }
         }, 2000);
     };
 
@@ -109,6 +110,54 @@ export default function Chatbox({ chatName, Chatid }) {
             messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
+
+    const renderMessageContent = (msg) => {
+        if (msg.file) {
+            const fileUrl = `http://localhost:5000/${msg.file}`;
+            const fileName = msg.file.split('/').pop();
+            const fileType = fileName.split('.').pop();
+            const fileSize = (msg.fileSize / 1024).toFixed(2);
+
+            if (/\.pdf$/i.test(fileName)) {
+                return (
+                    <FilePreview
+                        fileUrl={fileUrl}
+                        fileName={fileName}
+                        fileType="pdf"
+                        fileSize={fileSize} />
+                );
+            }
+            if (/\.(jpe?g|png|gif)$/i.test(fileName)) {
+                return (
+                    <FilePreview
+                        fileUrl={fileUrl}
+                        fileName={fileName}
+                        fileType="image"
+                        fileSize={fileSize}
+                    />
+                );
+            }
+            if (/\.mp4$/i.test(fileName)) {
+                return (
+                    <FilePreview
+                        fileUrl={fileUrl}
+                        fileName={fileName}
+                        fileType="video"
+                        fileSize={fileSize}
+                    />
+                );
+            }
+            return (
+                <FilePreview
+                    fileUrl={fileUrl}
+                    fileName={fileName}
+                    fileType="unknown"
+                    fileSize={fileSize}
+                />
+            );
+        }
+        return <span>{msg.message}</span>;
+    };
 
     return (
         <div className="messageBox">
@@ -121,12 +170,11 @@ export default function Chatbox({ chatName, Chatid }) {
                 </span>
             </div>
             <div className="messageArea">
-                {messages.map((msg, index) => (<>
+                {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.id === Chatid ? 'sent' : 'received'}`}>
-                        <span>{msg.message}</span>
+                        {renderMessageContent(msg)}
                         <span className="time">{new Date(msg.createdAt).toLocaleTimeString()}</span>
                     </div>
-                    </>
                 ))}
                 <div ref={messageEndRef}></div>
                 {typingStatus && <div className="typingStatus">{typingStatus}</div>}
@@ -139,6 +187,16 @@ export default function Chatbox({ chatName, Chatid }) {
                     onChange={handleTyping}
                     onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 />
+                <label htmlFor="file" title='Upload File' className="file-input-label">
+                  <ImAttachment />
+                    <input
+                        type="file"
+                        name="file"
+                        id="file"
+                        className="file-input"
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
+                </label>
                 <span className="send" onClick={sendMessage}>
                     <IoMdSend />
                 </span>

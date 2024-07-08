@@ -1,16 +1,31 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const Message = require('../modals/message');
 const protectUser = require('../middleware/protectUser');
 const Conversation = require('../modals/Conversation');
-const { io, getReceiverSocketId } = require('../socket/scoket'); 
+const { io, getReceiverSocketId } = require('../socket/scoket');
 
-// Send message
-router.post('/sendMessage', protectUser, async (req, res) => {
+// Set up multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Send message with file
+router.post('/sendMessage', protectUser, upload.single('file'), async (req, res) => {
   try {
     const { message } = req.body;
     const { id } = req.query;
     const senderID = req.user.id;
+    const file = req.file;
 
     let conversation = await Conversation.findOne({
       $or: [
@@ -28,7 +43,8 @@ router.post('/sendMessage', protectUser, async (req, res) => {
     const newMessage = new Message({
       senderID,
       id,
-      message,
+      message: message || null,
+      file: file ? file.path : null,
     });
 
     if (newMessage) {
@@ -41,7 +57,6 @@ router.post('/sendMessage', protectUser, async (req, res) => {
 
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('newMessage', newMessage);
-      // console.log('New message emitted to receiver:', newMessage);
     }
 
     res.status(201).json(newMessage);

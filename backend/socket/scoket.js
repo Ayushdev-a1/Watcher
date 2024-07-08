@@ -1,11 +1,10 @@
 const Server = require("socket.io");
 const http = require("http");
 const express = require("express");
-const socketIo = require('socket.io');
 const app = express();
 
 const server = http.createServer(app);
-const io = socketIo(server, {
+const io = Server(server, {
     cors: {
         origin: "http://localhost:3000",
         methods: ["GET", "POST"],
@@ -21,10 +20,10 @@ const getReceiverSocketId = (receiverId) => {
 };
 
 io.on("connection", (socket) => {
-    console.log("a user connected", socket.id);
+    console.log("A user connected:", socket.id);
 
     const userId = socket.handshake.query.userId;
-    if (userId !== "undefined"){
+    if (userId !== "undefined") {
         userSocketMap[userId] = socket.id;
         userStatusMap[userId] = 'online';
     }
@@ -38,7 +37,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        console.log("user disconnected", socket.id);
+        console.log("User disconnected:", socket.id);
         delete userSocketMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });

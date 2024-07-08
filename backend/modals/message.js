@@ -12,10 +12,16 @@ const messageSchema = new mongoose.Schema({
     required: true,
     ref: 'User',
   },
- message: {
+  file: { type: String },
+  message: {
     type: String,
-    required: true,
-  },
+    validate: {
+        validator: function (v) {
+            return v || this.file;
+        },
+        message: 'Message is required if no file is provided'
+    }
+},
 }, {
   timestamps: true,
 });

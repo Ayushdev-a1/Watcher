@@ -15,6 +15,7 @@ const Server_PORT = process.env.SERVER_PORT || 5001;
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const userRouter = require('./router/Authentication');
 const meetingController = require('./router/MeetingController');
 const RequestController = require('./router/RequestController');
@@ -25,7 +26,7 @@ app.use("/api/meetings", meetingController);
 app.use("/api/auth", userRouter);
 app.use("/api/friends", RequestController);
 app.use("/api/messages", MessageController);
- 
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });

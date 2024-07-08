@@ -79,15 +79,13 @@ router.get("/getuser", protectUser, async (req, res) => {
   });
 //profile updation
   router.put('/profile', protectUser, async (req, res) => {
-    const { name, email } = req.body;
+    const { name} = req.body;
   
     try {
       let user = await User.findById(req.user.id);
       if (!user) return res.status(404).json({ msg: 'User not found' });
   
       user.name = name || user.name;
-      user.email = email || user.email;
-  
       await user.save();
       res.json(user);
     } catch (err) {

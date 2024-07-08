@@ -5,14 +5,14 @@ import { SiGotomeeting } from "react-icons/si";
 import { SiGoogleclassroom } from "react-icons/si";
 import { IoMdSettings } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
-import Chatbox from './Chatbox';
-import ChatList from './ChatList';
+import Chatbox from '../compnent/Chatbox';
+import ChatList from '../compnent/ChatList';
 import Defult from './Defult';
 import FriendsRequest from './FriendsRequest';
 import Profile from './Profile';
 // import { useSocketContext } from '../context/SocketContext';
 import Loader from './Loader';
-
+ 
 export default function Home() {
   const navigate = useNavigate();
   // const { socket, onlineUsers } = useSocketContext();
