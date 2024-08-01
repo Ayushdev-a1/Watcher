@@ -15,7 +15,6 @@ export const SocketProvider = ({ children }) => {
   const User_id = localStorage.getItem('User_id');
 
   useEffect(() => {
-    console.log(User_id)
     if (User_id) {
       console.log("Establishing socket connection...");
       const Socket = io('http://localhost:5001', {
@@ -39,6 +38,7 @@ export const SocketProvider = ({ children }) => {
         console.log("Online users:", users);
         setOnlineUsers(users);
       });
+
       return () => {
         Socket.close();
         setNewSocket(null);
@@ -48,8 +48,17 @@ export const SocketProvider = ({ children }) => {
     }
   }, [loggedIn, User_id]);
 
+  const disconnectSocket = () => {
+    if (newsocket) {
+      newsocket.disconnect();
+      setNewSocket(null);
+      setOnlineUsers([]);
+      console.log("Socket disconnected upon logout");
+    }
+  };
+
   return (
-    <SocketContext.Provider value={{ newsocket, onlineUsers }}>
+    <SocketContext.Provider value={{ newsocket, onlineUsers, disconnectSocket }}>
       {children}
     </SocketContext.Provider>
   );

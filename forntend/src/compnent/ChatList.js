@@ -7,9 +7,7 @@ import { useSocketContext } from '../context/SocketContext';
 export default function ChatList({ SelectedChat, setSelectedChat, setChatid, setActiveSection, ActiveSection }) {
     const [chatList, setChatList] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
-
     const { newsocket } = useSocketContext();
-
     useEffect(() => {
         const fetchFriends = async () => {
             try {
@@ -69,8 +67,8 @@ export default function ChatList({ SelectedChat, setSelectedChat, setChatid, set
             <span className="chatheading">
                 <h4>Chats</h4>
                 <span>
-                    <IoIosAddCircleOutline style={{ cursor: 'pointer' }} />
-                    <BsThreeDotsVertical style={{ cursor: 'pointer' }} />
+                    <IoIosAddCircleOutline title='Make Group' style={{ cursor: 'pointer' }} />
+                    <BsThreeDotsVertical title='More' style={{ cursor: 'pointer' }} />
                 </span>
             </span>
             <span className="search">

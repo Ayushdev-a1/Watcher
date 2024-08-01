@@ -12,6 +12,7 @@ import FriendsRequest from './FriendsRequest';
 import Profile from './Profile';
 // import { useSocketContext } from '../context/SocketContext';
 import Loader from './Loader';
+import Button from '../Icons/Button';
  
 export default function Home() {
   const navigate = useNavigate();
@@ -84,6 +85,7 @@ export default function Home() {
                 <ul>
                   <li id='settings' className={ActiveSection === 'settings' ? 'active' : ''} onClick={() => setActiveSection('settings')}><IoMdSettings /></li>
                   <li id='profile' className={ActiveSection === 'profile' ? 'active' : ''} onClick={() => setActiveSection('profile')}><CgProfile /></li>
+                  <li id='Logout' className='Logout'><Button/></li>
                 </ul>
               </span>
             </nav>

@@ -1,115 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
+// src/components/Chatbox.js
+import React, { useEffect } from 'react';
 import { IoMdVideocam, IoMdSend } from 'react-icons/io';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import Typing from '../Animation/Typing';
-import { useSocketContext } from '../context/SocketContext';
 import FilePreview from './FilePreview.js';
 import { ImAttachment } from "react-icons/im";
+import { useChatContext } from '../context/ChatContext';
+import './ChatBox.css'
 
 export default function Chatbox({ chatName, Chatid }) {
-    const { newsocket } = useSocketContext();
-    const [messages, setMessages] = useState([]);
-    const [messageContent, setMessageContent] = useState('');
-    const [file, setFile] = useState(null);
-    const [isTyping, setIsTyping] = useState(false);
-    const [typingStatus, setTypingStatus] = useState(null);
-    const messageEndRef = useRef(null);
-    const typingTimeoutRef = useRef(null);
+    const {    messages,    setMessages,    fetchMessages,    sendMessage,    handleTyping,    messageContent,    setMessageContent,    file,
+        setFile,    isTyping,    typingStatus,    messageEndRef
+    } = useChatContext();
 
     useEffect(() => {
-        fetchMessages();
-        if (newsocket) {
-            newsocket.on('newMessage', (newMessage) => {
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-            });
-            newsocket.on('typing', ({ userId, isTyping }) => {
-                if (isTyping) {
-                    setTypingStatus(<Typing />);
-                } else {
-                    setTypingStatus(null);
-                }
-            });
-        }
-        return () => {
-            if (newsocket) {
-                newsocket.off('newMessage');
-                newsocket.off('typing');
-            }
-        };
-    }, [Chatid, newsocket]);
-
-    const fetchMessages = async () => {
-        try {
-            const URL = `http://localhost:5000/api/messages/getMessage?id=${Chatid}`;
-            const response = await fetch(URL, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `${localStorage.getItem('token')}`,
-                },
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const data = await response.json();
-            setMessages(data);
-        } catch (error) {
-            console.error('Error fetching initial messages:', error);
-        }
-    };
-
-    const sendMessage = async () => {
-        if (messageContent.trim() === '' && !file) return;
-
-        const URL = `http://localhost:5000/api/messages/sendMessage?id=${Chatid}`;
-        const formData = new FormData();
-        formData.append('message', messageContent);
-        if (file) formData.append('file', file);
-
-        try {
-            const response = await fetch(URL, {
-                method: 'POST',
-                headers: {
-                    Authorization: `${localStorage.getItem('token')}`,
-                },
-                body: formData,
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const newMessage = await response.json();
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-            setMessageContent('');
-            setFile(null);
-
-            if (newsocket) {
-                newsocket.emit('sendMessage', { Chatid, message: messageContent });
-            }
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    };
-
-    const handleTyping = (e) => {
-        setMessageContent(e.target.value);
-        if (!isTyping && newsocket) {
-            setIsTyping(true);
-            newsocket.emit('typing', { Chatid, isTyping: true });
-        }
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = setTimeout(() => {
-            setIsTyping(false);
-            if (newsocket) {
-                newsocket.emit('typing', { Chatid, isTyping: false });
-            }
-        }, 2000);
-    };
-
-    useEffect(() => {
-        if (messageEndRef.current) {
-            messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [messages]);
+        fetchMessages(Chatid);
+    }, [Chatid, fetchMessages]);
+    
+    // useEffect(() => {
+    //     if (messageEndRef.current) {
+    //         messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    //     }
+    // }, [messages]);
 
     const renderMessageContent = (msg) => {
         if (msg.file) {
@@ -170,25 +82,25 @@ export default function Chatbox({ chatName, Chatid }) {
                 </span>
             </div>
             <div className="messageArea">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.id === Chatid ? 'sent' : 'received'}`}>
-                        {renderMessageContent(msg)}
-                        <span className="time">{new Date(msg.createdAt).toLocaleTimeString()}</span>
-                    </div>
-                ))}
-                <div ref={messageEndRef}></div>
-                {typingStatus && <div className="typingStatus">{typingStatus}</div>}
-            </div>
+    {messages.map((msg, index) => (
+        <div key={index} className={`message ${msg.id === Chatid ? 'sent' : 'received'}`}>
+            {renderMessageContent(msg)}
+            <span className="time">{new Date(msg.createdAt).toLocaleTimeString()}</span>
+        </div>
+    ))}
+    <div ref={messageEndRef}></div>
+    {typingStatus && <div className="typingStatus">{typingStatus}</div>}
+</div>
             <div className="Messagewriting">
                 <input
                     type="text"
                     placeholder="Type a message"
                     value={messageContent}
-                    onChange={handleTyping}
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    onChange={(e) => handleTyping(Chatid, e)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage(Chatid, messageContent)}
                 />
                 <label htmlFor="file" title='Upload File' className="file-input-label">
-                  <ImAttachment />
+                    <ImAttachment />
                     <input
                         type="file"
                         name="file"
@@ -197,7 +109,7 @@ export default function Chatbox({ chatName, Chatid }) {
                         onChange={(e) => setFile(e.target.files[0])}
                     />
                 </label>
-                <span className="send" onClick={sendMessage}>
+                <span className="send" onClick={() => sendMessage(Chatid, messageContent)}>
                     <IoMdSend />
                 </span>
             </div>

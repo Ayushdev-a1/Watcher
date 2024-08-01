@@ -7,7 +7,7 @@ const protectUser = async (req, res, next) => {
     return res.status(401).json({ error: "Please provide valid credentials" });
   }
   try {
-    const data = jwt.verify(token, process.env.jwt_secret);
+    const data = jwt.verify(token, process.env.jwt_secret); 
     if (!data) {
       return res.status(401).json({ error: "Invalid token" });
     }

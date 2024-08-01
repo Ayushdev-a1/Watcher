@@ -26,8 +26,8 @@ io.on("connection", (socket) => {
     if (userId !== "undefined") {
         userSocketMap[userId] = socket.id;
         userStatusMap[userId] = 'online';
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
     }
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     socket.on("typing", ({ Chatid, isTyping }) => {
         const receiverSocketId = getReceiverSocketId(Chatid);
@@ -39,6 +39,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
         delete userSocketMap[userId];
+        delete userStatusMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
     });
 });
